@@ -1,11 +1,13 @@
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import Sender from "./sender";
 
 const sender = new Sender;
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({ limit: '50mb', extended: false }));
 
 app.get("/status", (req: Request, res: Response) => {
   return res.send({
@@ -14,12 +16,15 @@ app.get("/status", (req: Request, res: Response) => {
   })
 });
 
-// Send Message Method
+// Send just a message method - Whatsapp & Telegram
 app.post("/sendText", async (req: Request, res: Response) => {
-  const { number, message } = req.body;
+  const { numberList, message } = req.body;
 
   try {
-    await sender.sendText(number, message);
+    for (let i = 0; i < numberList.length; i++) {
+      await sender.sendTextWpp(numberList[i], message);
+      await new Promise(f => setTimeout(f, 5000));
+    }
 
     return res.status(200).json();
   } catch (error) {
@@ -28,11 +33,16 @@ app.post("/sendText", async (req: Request, res: Response) => {
   }
 });
 
+// Send image w/ text Method - Whatsapp & Telegram
 app.post("/sendImage", async (req: Request, res: Response) => {
-  const { number, imgLink, imgName, message } = req.body;
+  const { numberList, imgLink, imgName, message } = req.body;
 
   try {
-    await sender.sendImage(number, imgLink, imgName, message);
+    // Loop pra enviar mensagens - com delay
+    for (let i = 0; i < numberList.length; i++) {
+      await sender.sendImageWpp(numberList[i], imgLink, imgName, message);
+      await new Promise(f => setTimeout(f, 5000));
+    }
 
     return res.status(200).json();
   } catch (error) {

@@ -1,10 +1,15 @@
 import { create, Whatsapp, Message, SocketState } from 'venom-bot';
+import { Telegraf } from 'telegraf';
 import parsePhoneNumber, { isValidPhoneNumber } from "libphonenumber-js";
 
 export interface QRCode {
   base64Qr: string;
   attempts: number;
 }
+
+// Telegram Bot Cretion
+// const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf("5622917968:AAF4LbCAZeA2xZOEdC7T_fJsLNrZNVXECw8");
 
 class Sender {
   private client: Whatsapp;
@@ -15,7 +20,7 @@ class Sender {
     return this.connected;
   }
 
-  get qrCode(): QRCode {
+  get qrCode(): QRCode {  
     return this.qr;
   }
 
@@ -23,7 +28,7 @@ class Sender {
     this.initialize();
   }
 
-  async sendText(to: string, body: string) {
+  async sendTextWpp(to: string, text: string) {
 
     if (!isValidPhoneNumber(to, "BR")) {
       throw new Error("This number is not valid.");
@@ -31,35 +36,35 @@ class Sender {
 
     let phoneNumber = parsePhoneNumber(to, "BR")?.format("E.164")?.replace("+", "") as string;
 
-    phoneNumber = phoneNumber.includes("@c.us") ? phoneNumber : `${phoneNumber}@c.us`;
+    phoneNumber = `${phoneNumber}@c.us`;
     
-    await this.client.sendText(phoneNumber, body);
+    await this.client.sendText(phoneNumber, text);
   }
 
-  async sendImage(to: string, body: string, imgName: string, text: string) {
+  async sendImageWpp(to: string, imgLink: string, imgName: string, text: string) {
 
     if (!isValidPhoneNumber(to, "BR")) {
       throw new Error("This number is not valid.");
     }
     
+    // Send imageBase64 and a text to Whatsapp
     let phoneNumber = parsePhoneNumber(to, "BR")?.format("E.164")?.replace("+", "") as string;
+    phoneNumber = `${phoneNumber}@c.us`;
+    await this.client.sendFileFromBase64(phoneNumber, imgLink, imgName, text);
     
-    phoneNumber = phoneNumber.includes("@c.us") ? phoneNumber : `${phoneNumber}@c.us`;
-    
-    await this.client.sendImage(phoneNumber, body, imgName, text);
+    // Remove base64 prefix (Telegram doesn't accept it)
+    imgLink = imgLink.replace('data:image/webp;base64,', '');
+    imgLink = imgLink.replace('data:image/png;base64,', '');
+    // imgLink = imgLink.replace('data:image/jpeg;base64,', '');
+
+    // Send imageBase64 and a text to Telegram
+    // await bot.telegram.sendPhoto(-872307469, {source: Buffer.from(imgLink, 'base64')});
+    // await bot.telegram.sendMessage(-872307469, text);
+    // await bot.telegram.sendPhoto(-868492132, {source: Buffer.from(imgLink, 'base64')});
+    // await bot.telegram.sendMessage(-868492132, text);
   }
 
   private initialize() {
-    const qr = (base64Qr: string, asciiQR: string, attempts: number) => {
-      this.qr = { base64Qr, attempts}
-    }
-
-    const status = (statusSession: string) => {
-      this.connected = ["isLogged", "qrReadSuccess", "chatsAvailable"].includes(
-        statusSession
-      )
-    }
-
     const start = (client: Whatsapp) => {
       this.client = client;
 
@@ -68,7 +73,7 @@ class Sender {
       })
     }
 
-    create({session: 'ws-sender-dev'})
+    create({session: 'ws-sender-dev', headless: false, debug: true})
       .then((client) => start(client))
       .catch((error) => console.error(error));
   }
