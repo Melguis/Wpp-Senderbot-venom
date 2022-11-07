@@ -1,3 +1,6 @@
-2022/10/31-15:33:19.200 43a8 Reusing MANIFEST D:\Ferramentas\Projetos\NodeJS\ws-sender-dev\tokens\ws-sender-dev\Default\Local Storage\leveldb/MANIFEST-000001
-2022/10/31-15:33:19.203 43a8 Recovering log #26
-2022/10/31-15:33:19.204 43a8 Reusing old log D:\Ferramentas\Projetos\NodeJS\ws-sender-dev\tokens\ws-sender-dev\Default\Local Storage\leveldb/000026.log 
+2022/11/04-12:57:18.323 1c8c Reusing MANIFEST D:\Ferramentas\Projetos\NodeJS\ws-sender-dev\tokens\ws-sender-dev\Default\Local Storage\leveldb/MANIFEST-000001
+2022/11/04-12:57:18.324 1c8c Recovering log #36
+2022/11/04-12:57:18.378 1c8c Reusing old log D:\Ferramentas\Projetos\NodeJS\ws-sender-dev\tokens\ws-sender-dev\Default\Local Storage\leveldb/000036.log 
+2022/11/04-18:02:40.398 1898 Level-0 table #40: started
+2022/11/04-18:02:40.432 1898 Level-0 table #40: 10449 bytes OK
+2022/11/04-18:02:40.497 1898 Delete type=0 #36

@@ -18,11 +18,13 @@ app.get("/status", (req: Request, res: Response) => {
 
 // Send just a message method - Whatsapp & Telegram
 app.post("/sendText", async (req: Request, res: Response) => {
-  const { numberList, message } = req.body;
+  const { numberList, groupList, message } = req.body;
 
   try {
-    for (let i = 0; i < numberList.length; i++) {
-      await sender.sendTextWpp(numberList[i], message);
+    const allNumbersList = numberList.concat(groupList);
+    console.log(allNumbersList);
+    for (let i = 0; i < allNumbersList.length; i++) {
+      await sender.sendTextWpp(allNumbersList[i], message);
       await new Promise(f => setTimeout(f, 5000));
     }
 
@@ -35,9 +37,10 @@ app.post("/sendText", async (req: Request, res: Response) => {
 
 // Send image w/ text Method - Whatsapp & Telegram
 app.post("/sendImage", async (req: Request, res: Response) => {
-  const { numberList, imgLink, imgName, message } = req.body;
+  const { numberList, groupList, imgLink, imgName, message } = req.body;
 
   try {
+    const allNumbersList = numberList.concat(groupList);
     // Loop pra enviar mensagens - com delay
     for (let i = 0; i < numberList.length; i++) {
       await sender.sendImageWpp(numberList[i], imgLink, imgName, message);
